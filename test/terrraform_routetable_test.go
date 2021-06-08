@@ -4,17 +4,20 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/test-structure"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
-func TestTerraformRouteTable(t *testing.T) {
+func TestTerraformRouteTableNewResourceGroup(t *testing.T) {
 	t.Parallel()
 
-	fixtureFolder := "./fixture"
+	fixtureFolder := "./fixture_new_rg"
 
 	// Deploy the example
 	test_structure.RunTestStage(t, "setup", func() {
-		terraformOptions := configureTerraformOptions(t, fixtureFolder)
+		terraformOptions := &terraform.Options{
+			TerraformDir: fixtureFolder,
+			Vars:         map[string]interface{}{},
+		}
 
 		// Save the options so later test stages can use them
 		test_structure.SaveTerraformOptions(t, fixtureFolder, terraformOptions)
@@ -41,15 +44,39 @@ func TestTerraformRouteTable(t *testing.T) {
 
 }
 
-func configureTerraformOptions(t *testing.T, fixtureFolder string) *terraform.Options {
+func TestTerraformRouteTableExistingResourceGroup(t *testing.T) {
+	t.Parallel()
 
-	terraformOptions := &terraform.Options{
-		// The path to where our Terraform code is located
-		TerraformDir: fixtureFolder,
+	fixtureFolder := "./fixture_existing_rg"
 
-		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{},
-	}
+	// Deploy the example
+	test_structure.RunTestStage(t, "setup", func() {
+		terraformOptions := &terraform.Options{
+			TerraformDir: fixtureFolder,
+			Vars:         map[string]interface{}{},
+		}
 
-	return terraformOptions
+		// Save the options so later test stages can use them
+		test_structure.SaveTerraformOptions(t, fixtureFolder, terraformOptions)
+
+		// This will init and apply the resources and fail the test if there are any errors
+		terraform.InitAndApply(t, terraformOptions)
+	})
+
+	// Check whether the length of output meets the requirement
+	test_structure.RunTestStage(t, "validate", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, fixtureFolder)
+
+		routeTableID := terraform.Output(t, terraformOptions, "test_routetable_id")
+		if len(routeTableID) <= 0 {
+			t.Fatal("Wrong output")
+		}
+	})
+
+	// At the end of the test, clean up any resources that were created
+	test_structure.RunTestStage(t, "teardown", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, fixtureFolder)
+		terraform.Destroy(t, terraformOptions)
+	})
+
 }

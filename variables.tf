@@ -1,3 +1,9 @@
+variable "create_resource_group" {
+  type        = bool
+  description = "Determine if a new resource group will be created or use an existing one."
+  default     = false
+}
+
 variable "resource_group_name" {
   description = "Default resource group name that the network will be created in."
   default     = "myapp-rg"
@@ -28,14 +34,14 @@ variable "route_names" {
   default     = ["subnet1"]
 }
 
-variable route_nexthop_types {
+variable "route_nexthop_types" {
   description = "The type of Azure hop the packet should be sent to for each corresponding route.Valid values are 'VirtualNetworkGateway', 'VnetLocal', 'Internet', 'HyperNetGateway', 'None'"
   default     = ["VnetLocal"]
 }
 
 variable "tags" {
   description = "The tags to associate with your network and subnets."
-  type        = "map"
+  type        = map(string)
 
   default = {
     tag1 = ""
