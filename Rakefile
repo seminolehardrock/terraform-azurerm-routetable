@@ -9,7 +9,7 @@ require 'terramodtest'
 namespace :presteps do
   task :ensure do
     puts "Using dep ensure to install required go packages.\n"
-    success = system ("dep ensure")
+    success = system ("dep ensure || go mod vendor")
     if not success 
       raise "ERROR: Dep ensure failed!\n".red
     end

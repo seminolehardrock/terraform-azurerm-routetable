@@ -42,3 +42,6 @@ Gemfile.lock
 
 # Mac folder attribute file
 .DS_Store
+
+# Ignoring envs files
+*.env*
