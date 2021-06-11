@@ -17,12 +17,13 @@ resource "azurerm_route_table" "rtable" {
 }
 
 resource "azurerm_route" "route" {
-  name                = var.route_names[count.index]
-  resource_group_name = var.resource_group_name
-  route_table_name    = azurerm_route_table.rtable.name
-  address_prefix      = var.route_prefixes[count.index]
-  next_hop_type       = var.route_nexthop_types[count.index]
-  count               = length(var.route_names)
+  name                   = var.route_names[count.index]
+  resource_group_name    = var.resource_group_name
+  route_table_name       = azurerm_route_table.rtable.name
+  address_prefix         = var.route_prefixes[count.index]
+  next_hop_type          = var.route_nexthop_types[count.index]
+  next_hop_in_ip_address = var.route_nexthop_types[count.index] == "VirtualAppliance" ? var.route_next_hop_in_ip_addresses[count.index] : null
+  count                  = length(var.route_names)
 
   depends_on = [
     azurerm_route_table.rtable
