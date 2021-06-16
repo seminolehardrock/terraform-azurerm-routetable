@@ -61,3 +61,9 @@ variable "tags" {
     tag2 = ""
   }
 }
+
+variable "route_associations" {
+  type = list(string)
+  description = "List of subnets for associations with route table"
+  default = []
+}

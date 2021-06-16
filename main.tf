@@ -29,3 +29,13 @@ resource "azurerm_route" "route" {
     azurerm_route_table.rtable
   ]
 }
+
+resource "azurerm_subnet_route_table_association" "rtblassc" {
+  subnet_id      = var.route_associations[count.index]
+  route_table_id = azurerm_route_table.rtable.id
+  count          = length(var.route_associations)
+
+  depends_on = [
+    azurerm_route_table.rtable
+  ]
+}
